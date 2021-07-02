@@ -32,12 +32,10 @@ import org.gradle.initialization.DefaultProjectDescriptor
 import org.gradle.initialization.DefaultSettings
 import org.gradle.initialization.layout.BuildLayout
 import org.gradle.internal.Factory
-import org.gradle.internal.build.BuildLifecycleControllerFactory
 import org.gradle.internal.build.BuildState
 import org.gradle.internal.build.BuildStateRegistry
 import org.gradle.internal.build.IncludedBuildFactory
 import org.gradle.internal.build.IncludedBuildState
-import org.gradle.internal.buildtree.BuildTreeState
 import org.gradle.internal.file.PathToFileResolver
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.internal.resource.StringTextResource
@@ -121,7 +119,7 @@ class ConfigurationCacheHost internal constructor(
 
         private
         fun createProject(descriptor: DefaultProjectDescriptor): ProjectInternal {
-            val projectState = gradle.owner.getProject(descriptor.path())
+            val projectState = gradle.owner.projects.getProject(descriptor.path())
             projectState.createMutableModel(coreAndPluginsScope, coreAndPluginsScope)
             val project = projectState.mutableModel
             // Build dir is restored in order to use the correct workspace directory for transforms of project dependencies when the build dir has been customized
@@ -135,12 +133,12 @@ class ConfigurationCacheHost internal constructor(
         }
 
         override fun getProject(path: String): ProjectInternal =
-            gradle.owner.getProject(Path.path(path)).mutableModel
+            gradle.owner.projects.getProject(Path.path(path)).mutableModel
 
         override fun scheduleNodes(nodes: Collection<Node>) {
-            gradle.taskGraph.run {
-                addNodes(nodes)
-                populate()
+            gradle.owner.populateWorkGraph {
+                it.addNodes(nodes)
+                it.populate()
             }
         }
 
@@ -154,17 +152,17 @@ class ConfigurationCacheHost internal constructor(
             buildDefinition: BuildDefinition,
             isImplicit: Boolean,
             owner: BuildState
-        ): IncludedBuildState = service<Instantiator>().newInstance(
-            ConfigurationCacheIncludedBuildState::class.java,
+        ): IncludedBuildState = ConfigurationCacheIncludedBuildState(
             buildIdentifier,
             identityPath,
             buildDefinition,
             isImplicit,
             owner,
-            service<BuildTreeState>(),
+            service(),
             service<WorkerLeaseService>().currentWorkerLease,
-            service<BuildLifecycleControllerFactory>(),
-            service<ProjectStateRegistry>()
+            service(),
+            service(),
+            service()
         )
 
         override fun prepareBuild(includedBuild: IncludedBuildState) {
