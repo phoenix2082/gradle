@@ -60,7 +60,7 @@ class CIConfigIntegrationTests {
         val readyForRelease = rootProject.searchSubproject("Gradle_Master_Check_Stage_ReadyforRelease")
         val macBuilds = readyForRelease.subProjects.filter { it.name.contains("Macos") }.flatMap { (it as FunctionalTestProject).functionalTests }
         assertTrue(macBuilds.isNotEmpty())
-        assertTrue(macBuilds.all { it.params.findRawParam("env.REPO_MIRROR_URLS")!!.value == "" })
+        assertTrue(macBuilds.all { it.params.findRawParam("env.REPO_MIRROR_GRDEV_URLS")!!.value == "" })
     }
 
     @Test

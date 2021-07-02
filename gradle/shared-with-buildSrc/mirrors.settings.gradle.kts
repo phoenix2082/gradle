@@ -37,7 +37,7 @@ val originalUrls: Map<String, String> = mapOf(
 )
 
 val mirrorUrls: Map<String, String> =
-    providers.environmentVariable("REPO_MIRROR_URLS").forUseAtConfigurationTime().orNull
+    providers.environmentVariable("REPO_MIRROR_GRDEV_URLS").forUseAtConfigurationTime().orNull
         ?.ifBlank { null }
         ?.split(',')
         ?.associate { nameToUrl ->

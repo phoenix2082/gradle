@@ -183,7 +183,7 @@ fun applyTestDefaults(
     preSteps: BuildSteps.() -> Unit = {} // the steps before runner steps
 ) {
     if (os == Os.MACOS) {
-        buildType.params.param("env.REPO_MIRROR_URLS", "")
+        buildType.params.param("env.REPO_MIRROR_GRDEV_URLS", "")
     }
 
     buildType.applyDefaultSettings(os, timeout = timeout)
