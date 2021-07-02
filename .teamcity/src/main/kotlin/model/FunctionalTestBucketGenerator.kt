@@ -193,7 +193,8 @@ class FunctionalTestBucketGenerator(private val model: CIBuildModel, testTimeDat
             .sortedBy { -it.totalTime }
 
         // native projects are not able to be run on TD for now
-        val nativeSubprojects = listOf("language-native", "platform-native", "testing-native", "ide-native")
+        // quite a few TAPI tests also don't work
+        val nativeSubprojects = listOf("language-native", "platform-native", "testing-native", "ide-native", "tooling-api")
         return if (testCoverage.testType == TestType.platform) {
             splitDocsSubproject(validSubprojects) + splitIntoBuckets(validSubprojects, subProjectTestClassTimes, testCoverage, listOf("docs"), nativeSubprojects)
         } else {

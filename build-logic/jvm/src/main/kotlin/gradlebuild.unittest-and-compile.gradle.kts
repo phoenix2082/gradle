@@ -278,6 +278,10 @@ fun removeTeamcityTempProperty() {
 
 fun Project.enableExperimentalTestFiltering() = !setOf("build-scan-performance", "configuration-cache", "kotlin-dsl", "performance", "smoke-test", "soak").contains(name) && isExperimentalTestFilteringEnabled
 
+fun Project.localTestDistributionExecutorOnly() = setOf(
+    "file-watching" // WatchedDirectoriesFileSystemWatchingIntegrationTest fails on local filesystem
+).contains(name)
+
 val isExperimentalTestFilteringEnabled
     get() = System.getProperty("gradle.internal.testselection.enabled").toBoolean()
 
